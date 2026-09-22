@@ -1,0 +1,362 @@
+@import 'tailwindcss';
+
+/* ==========================================================================
+   HEAL ACTIVE – Design System
+   --------------------------------------------------------------------------
+   Grundhaltung: sportlich, modern, minimalistisch, viel Weissraum.
+   Bewusst KEINE klinische Farbwelt (kein Praxis-Blau, kein Apotheken-Gruen
+   auf weissem Reinraum-Hintergrund). Stattdessen: warmes Off-White, tiefes
+   Nachtblau als Textfarbe und zwei energetische Akzente.
+   ========================================================================== */
+
+@theme {
+  /* --- Farben ------------------------------------------------------------ */
+  /* Basis */
+  --color-ink: #0b1220; /* Haupttext, dunkle Flaechen */
+  --color-graphite: #33415c; /* Sekundaertext */
+  --color-slate-soft: #6b7a90; /* Tertiaertext, Labels */
+  --color-sand: #faf7f2; /* Seitenhintergrund (warmes Off-White) */
+  --color-surface: #ffffff; /* Cards */
+  --color-chalk: #ece6dd; /* Linien, Rahmen */
+  --color-figure: #e6dfd3; /* Silhouette im Körpernavigator */
+
+  /* Akzente */
+  --color-signal: #ff5a36; /* Energie / Primaer-CTA */
+  --color-signal-dark: #e6421f;
+  --color-signal-soft: #fff0ec;
+  --color-pulse: #0fb89c; /* Recovery / Erfolg / Verfuegbarkeit */
+  --color-pulse-dark: #0a8e78;
+  --color-pulse-soft: #e6f7f4;
+  --color-beam: #ffc94d; /* Highlights, Badges */
+  --color-beam-soft: #fff6e0;
+
+  /* --- Typografie -------------------------------------------------------- */
+  --font-sans:
+    var(--font-heal-sans), ui-sans-serif, system-ui, -apple-system,
+    'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-display:
+    var(--font-heal-display), var(--font-heal-sans), ui-sans-serif, system-ui,
+    -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  /* Grosse, moderne Display-Groessen (fluid via clamp) */
+  --text-display-xl: clamp(2.75rem, 7vw, 6rem);
+  --text-display-xl--line-height: 0.94;
+  --text-display-xl--letter-spacing: -0.035em;
+  --text-display-lg: clamp(2.25rem, 5vw, 4rem);
+  --text-display-lg--line-height: 0.98;
+  --text-display-lg--letter-spacing: -0.03em;
+  --text-display-md: clamp(1.75rem, 3.4vw, 2.75rem);
+  --text-display-md--line-height: 1.05;
+  --text-display-md--letter-spacing: -0.025em;
+
+  /* --- Radien & Schatten -------------------------------------------------- */
+  --radius-card: 1.25rem;
+  --radius-xl2: 1.75rem;
+  --shadow-soft: 0 1px 2px rgb(11 18 32 / 0.04), 0 8px 24px -12px rgb(11 18 32 / 0.12);
+  --shadow-lift: 0 2px 4px rgb(11 18 32 / 0.05), 0 18px 40px -18px rgb(11 18 32 / 0.22);
+
+  /* --- Animationen -------------------------------------------------------- */
+  --animate-rise: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-fade: fade 0.4s ease-out both;
+  --animate-stride: stride 2.4s ease-in-out infinite;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes stride {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(3%);
+  }
+}
+
+/* ==========================================================================
+   Basis-Layer
+   ========================================================================== */
+
+@layer base {
+  * {
+    border-color: var(--color-chalk);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-sand);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-synthesis-weight: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Sichtbarer, markenkonformer Fokusring (Accessibility) */
+  :focus-visible {
+    outline: 3px solid var(--color-signal);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Nutzer:innen mit reduzierter Bewegungspraeferenz respektieren */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ==========================================================================
+   Wiederverwendbare Komponenten-Klassen
+   ========================================================================== */
+
+@layer components {
+  .ha-container {
+    width: 100%;
+    margin-inline: auto;
+    max-width: 88rem;
+    padding-inline: 1rem;
+  }
+
+  @media (min-width: 768px) {
+    .ha-container {
+      padding-inline: 2rem;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .ha-container {
+      padding-inline: 3rem;
+    }
+  }
+
+  /* Eyebrow / Kicker */
+  .ha-eyebrow {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-slate-soft);
+  }
+
+  /* Buttons ---------------------------------------------------------------- */
+  .ha-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    /* min. 44px Touch-Flaeche (Mobile First) */
+    min-height: 2.875rem;
+    padding: 0.75rem 1.5rem;
+    transition:
+      transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+      background-color 0.18s ease,
+      color 0.18s ease,
+      box-shadow 0.18s ease;
+  }
+
+  .ha-btn:active {
+    transform: translateY(1px) scale(0.99);
+  }
+
+  .ha-btn-primary {
+    background-color: var(--color-signal);
+    color: #fff;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .ha-btn-primary:hover {
+    background-color: var(--color-signal-dark);
+    box-shadow: var(--shadow-lift);
+  }
+
+  .ha-btn-dark {
+    background-color: var(--color-ink);
+    color: #fff;
+  }
+
+  .ha-btn-dark:hover {
+    background-color: var(--color-graphite);
+  }
+
+  .ha-btn-ghost {
+    background-color: transparent;
+    color: var(--color-ink);
+    border: 1.5px solid var(--color-chalk);
+  }
+
+  .ha-btn-ghost:hover {
+    border-color: var(--color-ink);
+    background-color: #fff;
+  }
+
+  .ha-btn-sm {
+    min-height: 2.25rem;
+    padding: 0.4rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  /* Cards ------------------------------------------------------------------ */
+  .ha-card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-chalk);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .ha-card-hover {
+    transition:
+      transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.25s ease,
+      border-color 0.25s ease;
+  }
+
+  .ha-card-hover:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lift);
+    border-color: color-mix(in srgb, var(--color-ink) 18%, transparent);
+  }
+
+  /* Chips / Pills ---------------------------------------------------------- */
+  .ha-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    border-radius: 9999px;
+    border: 1px solid var(--color-chalk);
+    background-color: #fff;
+    padding: 0.375rem 0.875rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-graphite);
+    transition:
+      border-color 0.18s ease,
+      color 0.18s ease,
+      background-color 0.18s ease;
+  }
+
+  .ha-chip:hover {
+    border-color: var(--color-ink);
+    color: var(--color-ink);
+  }
+
+  .ha-chip-active {
+    background-color: var(--color-ink);
+    border-color: var(--color-ink);
+    color: #fff;
+  }
+
+  /* Formularfelder --------------------------------------------------------- */
+  .ha-input {
+    width: 100%;
+    min-height: 2.875rem;
+    border-radius: 0.875rem;
+    border: 1.5px solid var(--color-chalk);
+    background-color: #fff;
+    padding: 0.625rem 0.875rem;
+    font-size: 1rem; /* 16px verhindert iOS-Zoom beim Fokus */
+    color: var(--color-ink);
+    transition: border-color 0.18s ease;
+  }
+
+  .ha-input:hover {
+    border-color: color-mix(in srgb, var(--color-ink) 30%, transparent);
+  }
+
+  .ha-input::placeholder {
+    color: var(--color-slate-soft);
+  }
+
+  .ha-label {
+    display: block;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--color-graphite);
+    margin-bottom: 0.375rem;
+  }
+
+  /* Prose-aehnliche Textbloecke fuer redaktionelle Inhalte ------------------ */
+  .ha-prose {
+    color: var(--color-graphite);
+    line-height: 1.7;
+  }
+
+  .ha-prose > * + * {
+    margin-top: 1rem;
+  }
+
+  .ha-prose strong {
+    color: var(--color-ink);
+    font-weight: 700;
+  }
+
+  /* Screenreader-only ------------------------------------------------------ */
+  .ha-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+}
+
+/* Scrollbar in horizontalen Karussells dezent halten */
+.ha-scroll-x {
+  overflow-x: auto;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+}
+
+.ha-scroll-x > * {
+  scroll-snap-align: start;
+}
