@@ -4,10 +4,13 @@ Arbeitsdatei für die systematische Hersteller- und Lieferantenrecherche.
 Ziel: Hersteller strukturiert kontaktieren, Händlerkonditionen erfragen,
 Ergebnisse festhalten und den nächsten Schritt nie aus den Augen verlieren.
 
-> **Wichtig:** In diesem Repository sind **keine** echten Hersteller,
-> Kontaktdaten oder Konditionen hinterlegt. Die Tabellen unten sind leer und
-> werden von dir befüllt. Auch `src/data/manufacturers.ts` enthält
-> ausschließlich neutrale Platzhalter mit dem Status „Noch nicht kontaktiert“.
+> **Wichtig:** In diesem Repository sind **keine** Kontaktdaten oder
+> Konditionen hinterlegt. Die Recherchetabelle enthält öffentlich bekannte
+> **Kandidaten** (Stand 11/2026) mit dem Status „Noch nicht kontaktiert“. Es
+> besteht zu keinem dieser Unternehmen eine Geschäftsbeziehung. Websites mit
+> „prüfen“ vor dem Erstkontakt verifizieren. `src/data/manufacturers.ts`
+> enthält weiterhin nur neutrale Platzhalter. Begründung der Auswahl je
+> Kategorie: `docs/SORTIMENT.md`.
 
 ---
 
@@ -35,13 +38,25 @@ Pro Hersteller eine Zeile. Leere Felder bedeuten: noch offen.
 
 | Hersteller | Produktgruppe | Ansprechpartner | Telefon | E-Mail | Website | Händlerregistrierung | Mindestbestellwert | Einkaufskonditionen | Dropshipping | Lieferzeit | Bild-/Medienrechte | Produktdaten vorhanden | Gespräch geführt am | Ergebnis | Nächster Schritt | Notizen |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-|  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Bauerfeind AG | Bandagen |  |  |  | bauerfeind.de |  |  |  |  |  |  |  |  | Kandidat – noch nicht kontaktiert | Erstkontakt (Leitfaden Abschnitt 3) | Premium-Bandagen, MDR-Status je Artikel klären |
+| medi GmbH & Co. KG | Bandagen |  |  |  | medi.de |  |  |  |  |  |  |  |  | Kandidat – noch nicht kontaktiert | Erstkontakt (Leitfaden Abschnitt 3) | Bandagen und Orthesen, Sport-Linie |
+| Push (Nea International) | Bandagen |  |  |  | prüfen |  |  |  |  |  |  |  |  | Kandidat – noch nicht kontaktiert | Erstkontakt (Leitfaden Abschnitt 3) | Sportbandagen, Fokus Stabilisierung |
+| Mueller Sports Medicine | Bandagen, Tapes |  |  |  | muellersportsmed.com |  |  |  |  |  |  |  |  | Kandidat – noch nicht kontaktiert | Erstkontakt (Leitfaden Abschnitt 3) | Tapes, Bandagen, Vereinsbedarf |
+| Kinesio (Kinesio Holding) | Tapes |  |  |  | kinesiotaping.com |  |  |  |  |  |  |  |  | Kandidat – noch nicht kontaktiert | Erstkontakt (Leitfaden Abschnitt 3) | Original-Kinesiologie-Tape, DE-Vertrieb prüfen |
+| Essity (Leukotape / Leukoplast) | Tapes |  |  |  | prüfen |  |  |  |  |  |  |  |  | Kandidat – noch nicht kontaktiert | Erstkontakt (Leitfaden Abschnitt 3) | Rigide Tapes, Unterzug, Fixierung |
+| Performance Health (TheraBand) | Trainingsbänder |  |  |  | theraband.com |  |  |  |  |  |  |  |  | Kandidat – noch nicht kontaktiert | Erstkontakt (Leitfaden Abschnitt 3) | Bänder, Tubes, Zubehör, DE-Vertrieb prüfen |
+| Artzt GmbH (artzt vitality) | Trainingsbänder, Balance, Yoga |  |  |  | artzt.eu |  |  |  |  |  |  |  |  | Kandidat – noch nicht kontaktiert | Erstkontakt (Leitfaden Abschnitt 3) | Großhandel für Therapie und Fitness, breites Sortiment |
+| SISSEL GmbH | Balance, Massage, Bänder |  |  |  | sissel.com |  |  |  |  |  |  |  |  | Kandidat – noch nicht kontaktiert | Erstkontakt (Leitfaden Abschnitt 3) | Balance Pads, Bälle, Bänder |
+| TOGU GmbH | Balance & Koordination |  |  |  | togu.de |  |  |  |  |  |  |  |  | Kandidat – noch nicht kontaktiert | Erstkontakt (Leitfaden Abschnitt 3) | Balance-Halbkugeln, Ballkissen, Made in Germany |
+| BLACKROLL AG | Massage/Recovery, Bänder |  |  |  | blackroll.com |  |  |  |  |  |  |  |  | Kandidat – noch nicht kontaktiert | Erstkontakt (Leitfaden Abschnitt 3) | Faszienrollen, Bälle, Loop Bands |
+| Hyperice | Massage/Recovery |  |  |  | hyperice.com |  |  |  |  |  |  |  |  | Kandidat – noch nicht kontaktiert | Erstkontakt (Leitfaden Abschnitt 3) | Massagepistolen, Recovery-Geräte, ElektroG beachten |
+| Therabody | Massage/Recovery |  |  |  | therabody.com |  |  |  |  |  |  |  |  | Kandidat – noch nicht kontaktiert | Erstkontakt (Leitfaden Abschnitt 3) | Massagepistolen, ElektroG beachten |
+| Compex (DJO) | EMS/TENS |  |  |  | compex.com |  |  |  |  |  |  |  |  | Kandidat – noch nicht kontaktiert | Erstkontakt (Leitfaden Abschnitt 3) | EMS-Geräte und Elektroden, MDR/CE klären |
+| Beurer GmbH | EMS/TENS, Recovery |  |  |  | beurer.com |  |  |  |  |  |  |  |  | Kandidat – noch nicht kontaktiert | Erstkontakt (Leitfaden Abschnitt 3) | TENS/EMS, Wärme, MDR/CE klären |
+| Manduka | Yoga/Mobility |  |  |  | manduka.com |  |  |  |  |  |  |  |  | Kandidat – noch nicht kontaktiert | Erstkontakt (Leitfaden Abschnitt 3) | Premium-Yogamatten |
+| Yogistar | Yoga/Mobility |  |  |  | prüfen |  |  |  |  |  |  |  |  | Kandidat – noch nicht kontaktiert | Erstkontakt (Leitfaden Abschnitt 3) | Yogazubehör, deutscher Anbieter |
+| Barsortiment (Libri / Zeitfracht) | Bücher |  |  |  | prüfen |  |  |  |  |  |  |  |  | Kandidat – noch nicht kontaktiert | Erstkontakt (Leitfaden Abschnitt 3) | Bücher per Dropshipping, 7 % MwSt. |
+| Textil-Veredler (Eigenmarke) | Sport/Lifestyle |  |  |  | prüfen |  |  |  |  |  |  |  |  | Kandidat – noch nicht kontaktiert | Erstkontakt (Leitfaden Abschnitt 3) | Shirts, Hosen, Flaschen mit HEAL-ACTIVE-Branding |
 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
