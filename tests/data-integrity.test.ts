@@ -136,6 +136,25 @@ describe('Produkte', () => {
     }
   });
 
+  it('hat in jeder Unterkategorie mindestens ein Produkt', () => {
+    for (const category of categories) {
+      for (const sub of category.subcategories) {
+        const count = products.filter(
+          (product) => product.categorySlug === category.slug && product.subcategorySlug === sub.slug,
+        ).length;
+        expect(count, `Leere Unterkategorie: ${category.slug}/${sub.slug}`).toBeGreaterThan(0);
+      }
+    }
+  });
+
+  it('ordnet jedes Produkt einem Hersteller derselben Kategorie zu', () => {
+    for (const product of products) {
+      const manufacturer = manufacturers.find((entry) => entry.id === product.manufacturerId)!;
+      expect(manufacturer.productCategories, `Produkt ${product.slug}`).toContain(product.categorySlug);
+      expect(manufacturer.brand, `Produkt ${product.slug}`).toBe(product.brand);
+    }
+  });
+
   it('verlinkt sich nicht selbst als verwandtes Produkt', () => {
     for (const product of products) {
       expect(product.relatedProductSlugs).not.toContain(product.slug);

@@ -1,5 +1,6 @@
 import type { Product } from '@/lib/types';
 import { defineProduct } from './product-factory';
+import { sortimentProducts } from './products-sortiment';
 
 /**
  * ============================================================================
@@ -19,7 +20,7 @@ import { defineProduct } from './product-factory';
  * aus Warenwirtschaft / PIM ersetzt.
  */
 
-export const products: Product[] = [
+const coreProducts: Product[] = [
   /* ======================================================================
      BANDAGEN & SUPPORT
      ====================================================================== */
@@ -2678,6 +2679,9 @@ export const products: Product[] = [
     accessoryProductSlugs: [],
   }),
 ];
+
+/** Gesamtkatalog: Grundsortiment plus Sortimentserweiterung (alle Beispieldaten). */
+export const products: Product[] = [...coreProducts, ...sortimentProducts];
 
 export const productBySlug = new Map(products.map((product) => [product.slug, product]));
 export const productById = new Map(products.map((product) => [product.id, product]));

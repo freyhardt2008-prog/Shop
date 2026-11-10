@@ -1,14 +1,16 @@
 import type { PaymentMethod, PaymentMethodId } from '@/lib/types';
+import { createMollieProvider } from './providers/mollie';
 
 /**
- * ZAHLUNGSARTEN – VORBEREITET, NOCH NICHT AKTIV
+ * ZAHLUNGSARTEN
  * ---------------------------------------------------------------------------
- * Es ist bewusst KEIN Zahlungsanbieter angebunden und es liegen keinerlei
- * Zugangsdaten im Repository. Der Checkout erzeugt eine Demo-Bestellung.
+ * Standardmäßig ist der Demo-Provider aktiv: Der Checkout erzeugt eine
+ * Demo-Bestellung, es wird keine Zahlung ausgelöst. Es liegen keinerlei
+ * Zugangsdaten im Repository.
  *
- * Für die spätere Anbindung existiert unten das Interface `PaymentProvider`.
- * Ein echter Adapter (Stripe, Mollie, PayPal, Adyen) implementiert es und wird
- * über die Umgebungsvariable `PAYMENT_PROVIDER` ausgewählt.
+ * Adapter implementieren das Interface `PaymentProvider` und werden über
+ * `PAYMENT_PROVIDER` gewählt. Vorhanden: `mollie` (providers/mollie.ts).
+ * Weitere (Stripe, PayPal, Adyen) folgen demselben Muster.
  */
 export const paymentMethods: PaymentMethod[] = [
   {
@@ -76,8 +78,10 @@ export interface PaymentProvider {
     email: string;
     methodId: PaymentMethodId;
   }): Promise<PaymentIntent>;
-  /** Verifiziert eingehende Webhooks (Signaturprüfung). */
+  /** Verifiziert eingehende Webhooks (Signaturprüfung bzw. Gegenabruf beim Anbieter). */
   verifyWebhook(rawBody: string, signature: string): Promise<boolean>;
+  /** Optional: aktuellen Zahlungsstatus beim Anbieter abfragen. */
+  getStatus?(intentId: string): Promise<PaymentIntent['status'] | null>;
 }
 
 /**
@@ -102,14 +106,24 @@ export const mockPaymentProvider: PaymentProvider = {
 
 /**
  * Wählt den Provider anhand von `PAYMENT_PROVIDER`.
- * Solange keine echten Adapter registriert sind, greift immer der Demo-Provider.
+ *
+ * - `mock` (Standard): Demo-Provider, löst keine Zahlung aus.
+ * - `mollie`: echter Adapter, braucht `PAYMENT_API_KEY` und `NEXT_PUBLIC_SITE_URL`.
+ *
+ * Fail-closed: Ist ein echter Provider gewählt, aber falsch konfiguriert, wird
+ * ein Fehler geworfen statt stillschweigend auf den Demo-Provider zu fallen.
  */
-export function getPaymentProvider(): PaymentProvider {
-  const configured = process.env.PAYMENT_PROVIDER ?? 'mock';
+export function getPaymentProvider(env: Record<string, string | undefined> = process.env): PaymentProvider {
+  const configured = env.PAYMENT_PROVIDER ?? 'mock';
   switch (configured) {
-    // case 'stripe': return stripeProvider;
-    // case 'mollie': return mollieProvider;
-    default:
+    case 'mollie':
+      return createMollieProvider({
+        apiKey: env.PAYMENT_API_KEY ?? '',
+        siteUrl: env.NEXT_PUBLIC_SITE_URL ?? '',
+      });
+    case 'mock':
       return mockPaymentProvider;
+    default:
+      throw new Error(`Unbekannter PAYMENT_PROVIDER: ${configured}`);
   }
 }
