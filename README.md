@@ -70,7 +70,7 @@ npm run build      # Produktions-Build
 npm run start      # Produktionsserver
 npm run lint       # ESLint
 npm run typecheck  # TypeScript ohne Emit
-npm test           # Vitest (105 Tests)
+npm test           # Vitest (117 Tests)
 ```
 
 ---
@@ -104,7 +104,7 @@ src/
 │   │   ├── favoriten/ konto/           Merkzettel & Kundenkonto
 │   │   └── rechtliches/                Rechtstexte
 │   ├── admin/                  Geschützter Admin-Bereich (eigenes Layout)
-│   └── api/                    Route Handler (Checkout, Admin-Login)
+│   └── api/                    Route Handler (Checkout, Payment-Webhook, Admin-Login)
 ├── components/
 │   ├── brand/                  Logo & Markenzeichen (laufendes Skelett)
 │   ├── body-map/               Körpernavigator (SVG-Geometrie + Komponente)
@@ -115,7 +115,8 @@ src/
 │   └── ui/                     Icon, Badge, Accordion, Breadcrumbs, JSON-LD …
 ├── data/                       Inhalte & Katalog (heute Mock, später CMS/PIM)
 │   ├── categories.ts           8 Kategorien mit Unterkategorien + Filterprofil
-│   ├── products.ts             39 Beispielprodukte
+│   ├── products.ts             Grundsortiment (39 Beispielprodukte)
+│   ├── products-sortiment.ts   Sortimentserweiterung (36 Beispielprodukte)
 │   ├── product-factory.ts      Varianten-/EAN-/Bild-Erzeugung
 │   ├── body-regions.ts         20 Körperregionen
 │   ├── conditions.ts           38 Beschwerdebilder
@@ -135,6 +136,7 @@ src/
 │   ├── format.ts labels.ts     Formatierung & Beschriftungen (i18n-Einstieg)
 │   ├── admin-auth.ts           Admin-Session (Platzhalter)
 │   └── commerce/               Warenkorb, Versand, Payment-Schnittstelle
+│       └── providers/mollie.ts Mollie-Zahlungsadapter
 ├── middleware.ts               Zugriffsschutz für /admin
 └── tests/                      Vitest-Suite
 ```
@@ -168,7 +170,7 @@ Kopiere die Datei nach `.env.local`. **Niemals echte Keys committen** –
 | `ADMIN_SESSION_SECRET` | Secret für das Admin-Session-Cookie | nur für `/admin` |
 | `DATABASE_URL` | Datenbank | später |
 | `COMMERCE_*` / `CMS_*` | Headless Commerce / CMS | später |
-| `PAYMENT_*` | Zahlungsanbieter | später |
+| `PAYMENT_PROVIDER` / `PAYMENT_API_KEY` | Zahlungsanbieter (`mock` oder `mollie`) | für echte Zahlungen |
 | `SHIPPING_*` / `MAIL_*` | Versand, transaktionale E-Mails | später |
 
 > **Sicherheitsverhalten:** Sind `ADMIN_PASSWORD` und `ADMIN_SESSION_SECRET`
@@ -186,7 +188,7 @@ Der Shop ist ein Standard-Next.js-Projekt und läuft auf jeder Node-Plattform
 npm run build && npm run start
 ```
 
-Beim Build entstehen aktuell **292 Seiten**, davon der überwiegende Teil
+Beim Build entstehen aktuell **323 Seiten**, davon der überwiegende Teil
 statisch vorgeneriert (Kategorien, Produkte, Regionen, Beschwerden, Übungen,
 Tape-Anleitungen, Programme, Rechtstexte). Dynamisch gerendert werden nur
 Suche und Übungsfilter.
@@ -232,16 +234,17 @@ Empfohlenes Vorgehen:
 
 ## 9. Payment-Anbindung
 
-**Status: nicht angebunden. Es liegen keine Zugangsdaten im Repository.**
+**Status: Mollie-Adapter umgesetzt, standardmäßig inaktiv. Es liegen keine Zugangsdaten im Repository.**
 
 `src/lib/commerce/payment.ts` definiert das Interface `PaymentProvider`
-(`createIntent`, `verifyWebhook`) sowie einen `mockPaymentProvider`, der
-bewusst keine Zahlung auslöst. Für die Anbindung:
+(`createIntent`, `verifyWebhook`, optional `getStatus`). Ohne Konfiguration
+läuft der `mockPaymentProvider`, der bewusst keine Zahlung auslöst.
 
-1. Adapter implementieren (Stripe, Mollie, PayPal, Adyen …).
-2. In `getPaymentProvider()` registrieren, Auswahl über `PAYMENT_PROVIDER`.
-3. Webhook-Route ergänzen und Signaturprüfung aktivieren.
-4. Bestellstatus persistieren und Bestellbestätigung versenden.
+Mit `PAYMENT_PROVIDER=mollie`, `PAYMENT_API_KEY` und `NEXT_PUBLIC_SITE_URL`
+leitet der Checkout zur Mollie-Bezahlseite weiter; Statusänderungen kommen an
+`/api/payment/webhook`. Details, Sicherheitsverhalten und offene Punkte:
+**`docs/PLUGINS.md`**. Weitere Anbieter (Stripe, PayPal, Adyen) folgen
+demselben Muster in `src/lib/commerce/providers/`.
 
 ## 10. CMS-Anbindung
 
@@ -261,7 +264,7 @@ dienen als Schema-Vorlage.
 | Logo | Laufendes Skelett als SVG-Komponente (austauschbar) |
 | Navigation | 9 Hauptpunkte, Mega-Menü, Mobile-Drawer, Suche |
 | Startseite | Hero, drei Einstiege, alle Themenbereiche |
-| Shop | 8 Kategorien, 74 Unterkategorien, 39 Beispielprodukte |
+| Shop | 8 Kategorien, 74 Unterkategorien, 75 Beispielprodukte – jede Unterkategorie belegt |
 | Produktseite | Galerie, Varianten, Warenkorb, 8 Inhaltsabschnitte, JSON-LD |
 | Körpernavigator | 20 klickbare Regionen auf Vorder- und Rückansicht |
 | Produkt-Finder | 4 Schritte, Zustand in der URL, ohne JavaScript nutzbar |
@@ -275,12 +278,14 @@ dienen als Schema-Vorlage.
 | Hersteller | Datenstruktur + Status-Pipeline für Lieferantenmanagement |
 | SEO | Sprechende URLs, Metadaten, OpenGraph, JSON-LD, Sitemap, robots |
 | Recht | Alle Pflichtseiten als gekennzeichnete Entwürfe |
-| Tests | 105 Vitest-Tests (Daten, Suche, Filter, Warenkorb, Formatierung) |
+| Payment | Mollie-Adapter mit Redirect-Flow und Webhook (aktiv per `PAYMENT_PROVIDER=mollie`) |
+| Sortiment | Marktanalyse je Kategorie (`docs/SORTIMENT.md`), Herstellerkandidaten (`SUPPLIERS.md`) |
+| Tests | 117 Vitest-Tests (Daten, Suche, Filter, Warenkorb, Formatierung, Payment) |
 
 ## 12. Noch offene Punkte
 
 * **Backend:** Datenbank, Warenwirtschaft, Bestandsführung, Bestellpersistenz
-* **Payment:** Anbieterauswahl, Adapter, Webhooks, Rückerstattungen
+* **Payment:** Bestellstatus aus dem Webhook speichern, Rückerstattungen, weitere Adapter (Mollie ist umgesetzt)
 * **Versand:** Dienstleister, Labels, Sendungsverfolgung, echte Versandkosten
 * **Kundenkonto:** Registrierung, Anmeldung, Bestellhistorie, Adressbuch
 * **Admin:** echte Benutzerverwaltung mit Rollen (aktuell Platzhalter), Schreibzugriff

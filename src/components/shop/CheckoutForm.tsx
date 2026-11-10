@@ -89,7 +89,12 @@ export function CheckoutForm() {
         }),
       });
 
-      const data: { confirmation?: OrderConfirmation; errors?: string[]; error?: string } =
+      const data: {
+        confirmation?: OrderConfirmation;
+        payment?: { redirectUrl?: string };
+        errors?: string[];
+        error?: string;
+      } =
         await response.json();
 
       if (!response.ok || !data.confirmation) {
@@ -103,6 +108,14 @@ export function CheckoutForm() {
         window.sessionStorage.setItem(CONFIRMATION_KEY, JSON.stringify(data.confirmation));
       } catch {
         // Ohne Storage zeigt die Bestätigungsseite einen Hinweis an.
+      }
+
+      // Echter Zahlungsanbieter: zur Bezahlseite weiterleiten. Der Warenkorb bleibt
+      // erhalten, falls die Zahlung abgebrochen wird.
+      const redirectUrl = data.payment?.redirectUrl;
+      if (redirectUrl && /^https:\/\//.test(redirectUrl)) {
+        window.location.assign(redirectUrl);
+        return;
       }
 
       clear();

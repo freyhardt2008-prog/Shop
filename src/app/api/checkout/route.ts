@@ -16,10 +16,9 @@ import type {
  * Diese Route validiert die Bestelldaten serverseitig und berechnet die Summen
  * NEU aus dem Katalog – Preise aus dem Client werden bewusst ignoriert.
  *
- * Es wird KEINE echte Bestellung ausgelöst und KEINE Zahlung angestoßen:
- * `getPaymentProvider()` liefert aktuell den Demo-Provider. Sobald ein echter
- * Anbieter konfiguriert ist, entsteht hier ein Payment-Intent und die Antwort
- * enthält die Redirect-URL.
+ * Ohne Konfiguration wird KEINE Zahlung angestoßen (Demo-Provider). Mit
+ * `PAYMENT_PROVIDER=mollie` entsteht eine echte Mollie-Zahlung und die Antwort
+ * enthält die Redirect-URL zur Mollie-Bezahlseite.
  *
  * Vor dem Livegang zusätzlich nötig:
  * - Persistenz der Bestellung (Datenbank / ERP)
@@ -81,14 +80,25 @@ export async function POST(request: Request) {
   const totals = calculateTotals(resolved, shippingMethod.id);
   const orderNumber = generateOrderNumber();
 
-  // Zahlungsanbieter: aktuell der Demo-Provider (löst keine Zahlung aus).
-  const provider = getPaymentProvider();
-  const intent = await provider.createIntent({
-    amountCents: totals.totalCents,
-    orderNumber,
-    email: body.email!,
-    methodId: paymentMethod.id,
-  });
+  // Zahlungsanbieter: Standard ist der Demo-Provider (löst keine Zahlung aus).
+  let provider;
+  let intent;
+  try {
+    provider = getPaymentProvider();
+    intent = await provider.createIntent({
+      amountCents: totals.totalCents,
+      orderNumber,
+      email: body.email!,
+      methodId: paymentMethod.id,
+    });
+  } catch (error) {
+    console.error('Zahlung konnte nicht gestartet werden:', error);
+    return NextResponse.json(
+      { errors: ['Die Zahlung konnte gerade nicht gestartet werden. Bitte versuche es später erneut.'] },
+      { status: 502 },
+    );
+  }
+  const isDemoPayment = provider.id === 'mock';
 
   const confirmation: OrderConfirmation = {
     orderNumber,
@@ -108,8 +118,14 @@ export async function POST(request: Request) {
 
   return NextResponse.json({
     confirmation,
-    payment: { provider: provider.id, intentId: intent.id, status: intent.status },
-    notice:
-      'Demo-Bestellung: Es wurde keine Zahlung ausgelöst und keine Ware reserviert. Der Zahlungsanbieter ist noch nicht angebunden.',
+    payment: {
+      provider: provider.id,
+      intentId: intent.id,
+      status: intent.status,
+      redirectUrl: intent.redirectUrl,
+    },
+    notice: isDemoPayment
+      ? 'Demo-Bestellung: Es wurde keine Zahlung ausgelöst und keine Ware reserviert. Der Zahlungsanbieter ist noch nicht angebunden.'
+      : 'Weiterleitung zum Zahlungsanbieter. Die Bestellung wird erst nach erfolgreicher Zahlung bestätigt; Bestellpersistenz und Bestandsreservierung stehen noch aus.',
   });
 }
